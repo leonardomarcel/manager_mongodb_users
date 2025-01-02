@@ -17,5 +17,8 @@ def update_user(user_id, user):
 def delete_user(user_id):
     return client.get_collection().delete_one({"_id": ObjectId(user_id)})
 
-def get_user(user_id):
+def get_user_by_id(user_id):
     return client.get_collection().find_one({"_id": ObjectId(user_id)})
+
+def get_user_by_username(username):
+    return client.get_collection().find_one({"username": username})
