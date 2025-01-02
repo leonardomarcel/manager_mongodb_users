@@ -1,8 +1,16 @@
 
 import flask
 from bson import json_util
-from flask import request, Flask, render_template, Blueprint
-from users.users import list_users, add_user, delete_user, update_user, get_user
+#from flask import request, Flask, render_template, Blueprint
+from flask import (Flask,
+                   redirect,
+                   render_template,
+                   request,
+                   session,
+                   url_for,
+                   Blueprint)
+from users.users import list_users, add_user, delete_user, update_user, get_user_by_id, get_user_by_username
+from decoratores.decoratores import login_required
 
 users_blueprint = Blueprint('users', __name__)
 @users_blueprint.route("/json", methods=["GET"])
@@ -11,6 +19,7 @@ def get_users():
     return flask.jsonify(users)
 
 @users_blueprint.route("/", methods=["GET"])
+@login_required
 def home():
     users = list_users() 
     return render_template("base.html", title="Flask", users=users)
@@ -50,7 +59,19 @@ def update_user_api(id):
 @users_blueprint.route("/<id>", methods=["GET"])
 def get_user_api(id):
     try:
-        user = get_user(id)
+        user = get_user_by_id(id)
         return {'status': 'success', 'message': 'User retrieved successfully', 'data': json_util.dumps(user)}        
     except Exception as e:        
         return {'status': 'error', 'message': str(e)}
+
+@users_blueprint.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        user = get_user_by_username(username)
+        if user and user["password"] == password:
+            session["username"] = username
+            session["auth"] = True
+            return redirect(url_for("users.home"))
+    return render_template("login.html")
