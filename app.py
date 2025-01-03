@@ -1,10 +1,11 @@
 import flask
-from bson import json_util
-from flask import request, Flask, render_template
-from users.users import list_users, add_user, delete_user, update_user, get_user
 from users.routes import users_blueprint
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 app = flask.Flask(__name__)
+app.config['SECRET_KEY'] = os.environ['MY_SECRET_KEY']
 app.register_blueprint(users_blueprint, url_prefix="/users")
 
     
