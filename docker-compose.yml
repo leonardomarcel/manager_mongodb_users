@@ -23,6 +23,14 @@ services:
       nova_rede:
         ipv4_address: 200.100.50.50
 
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    networks:
+      nova_rede:
+        ipv4_address: 200.100.50.51
+
 networks:
   nova_rede:
     driver: bridge
